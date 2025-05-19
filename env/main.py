@@ -64,3 +64,18 @@ for log in logs:
     user_msgs, ai_msgs = parse_logs(log)
     keywords = extract_keywords(user_msgs + ai_msgs)
     print(f"Top keywords: {keywords}")
+    
+    
+    
+    
+
+def tfidf_keywords(texts):
+    vectorizer = TfidfVectorizer(stop_words='english', max_features=5)
+    tfidf_matrix = vectorizer.fit_transform(texts)
+    return vectorizer.get_feature_names_out()
+
+# Test5
+for log in logs:
+    user_msgs, ai_msgs = parse_logs(log)
+    tfidf_keys = tfidf_keywords(user_msgs + ai_msgs)
+    print(f"TF-IDF Keywords: {', '.join(tfidf_keys)}")
