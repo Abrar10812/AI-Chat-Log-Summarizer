@@ -20,8 +20,20 @@ def load_chat_logs(folder):
                 logs.append(f.read())
     return logs
 
-# Testing log loading
+# Test
 logs = load_chat_logs('data/')
 print("Loaded chat logs:")
 for log in logs:
-    print(log[:100], "...")  # Print first 100 characters of each log
+    print(log[:100], "...")  
+
+
+def parse_logs(log):
+    """Separate User and AI messages."""
+    user_msgs = re.findall(r'User: (.*)', log)
+    ai_msgs = re.findall(r'AI: (.*)', log)
+    return user_msgs, ai_msgs
+
+# Test2
+for log in logs:
+    user_msgs, ai_msgs = parse_logs(log)
+    print(f"User Messages: {len(user_msgs)} | AI Messages: {len(ai_msgs)}")
