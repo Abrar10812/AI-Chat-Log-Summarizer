@@ -24,7 +24,7 @@ def load_chat_logs(folder):
 logs = load_chat_logs('data/')
 print("Loaded chat logs:")
 for log in logs:
-    print(log[:100], "...")  
+    print(log[:], "...")  
 
 
 def parse_logs(log):
@@ -33,10 +33,10 @@ def parse_logs(log):
     ai_msgs = re.findall(r'AI: (.*)', log)
     return user_msgs, ai_msgs
 
-# Test2
-for log in logs:
-    user_msgs, ai_msgs = parse_logs(log)
-    print(f"User Messages: {len(user_msgs)} | AI Messages: {len(ai_msgs)}")
+# # Test2
+# for log in logs:
+#     user_msgs, ai_msgs = parse_logs(log)
+#     print(f"User Messages: {len(user_msgs)} | AI Messages: {len(ai_msgs)}")
     
     
 def message_stats(user_msgs, ai_msgs):
@@ -45,8 +45,22 @@ def message_stats(user_msgs, ai_msgs):
     ai_count = len(ai_msgs)
     return total, user_count, ai_count
 
-# Test3
+# # Test3
+# for log in logs:
+#     user_msgs, ai_msgs = parse_logs(log)
+#     total, user_count, ai_count = message_stats(user_msgs, ai_msgs)
+#     print(f"Total messages: {total} | User: {user_count} | AI: {ai_count}")
+    
+    
+def extract_keywords(texts):
+    stop_words = set(stopwords.words('english'))
+    words = [word.lower() for text in texts for word in re.findall(r'\b\w+\b', text)]
+    filtered_words = [word for word in words if word not in stop_words]
+    counter = Counter(filtered_words)
+    return counter.most_common(5)
+
+# Test4
 for log in logs:
     user_msgs, ai_msgs = parse_logs(log)
-    total, user_count, ai_count = message_stats(user_msgs, ai_msgs)
-    print(f"Total messages: {total} | User: {user_count} | AI: {ai_count}")
+    keywords = extract_keywords(user_msgs + ai_msgs)
+    print(f"Top keywords: {keywords}")
