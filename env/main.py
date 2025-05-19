@@ -37,3 +37,16 @@ def parse_logs(log):
 for log in logs:
     user_msgs, ai_msgs = parse_logs(log)
     print(f"User Messages: {len(user_msgs)} | AI Messages: {len(ai_msgs)}")
+    
+    
+def message_stats(user_msgs, ai_msgs):
+    total = len(user_msgs) + len(ai_msgs)
+    user_count = len(user_msgs)
+    ai_count = len(ai_msgs)
+    return total, user_count, ai_count
+
+# Test3
+for log in logs:
+    user_msgs, ai_msgs = parse_logs(log)
+    total, user_count, ai_count = message_stats(user_msgs, ai_msgs)
+    print(f"Total messages: {total} | User: {user_count} | AI: {ai_count}")
