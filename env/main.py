@@ -63,8 +63,7 @@ def extract_keywords(texts):
 for log in logs:
     user_msgs, ai_msgs = parse_logs(log)
     keywords = extract_keywords(user_msgs + ai_msgs)
-    print(f"Top keywords: {keywords}")
-    
+    print(f"\nTop keywords: {keywords}")
     
     
     
@@ -79,3 +78,23 @@ for log in logs:
     user_msgs, ai_msgs = parse_logs(log)
     tfidf_keys = tfidf_keywords(user_msgs + ai_msgs)
     print(f"TF-IDF Keywords: {', '.join(tfidf_keys)}")
+    
+    
+    
+    
+    
+
+def generate_summary(total, user_count, ai_count, keywords):
+    """Generate a readable summary of the chat log."""
+    print("\n--- Chat Log Summary ---")
+    print(f"Total exchanges: {total}")
+    print(f"User messages: {user_count}")
+    print(f"AI messages: {ai_count}")
+    print(f"Top keywords: {', '.join([word for word, _ in keywords])}")
+
+# Test6
+for log in logs:
+    user_msgs, ai_msgs = parse_logs(log)
+    total, user_count, ai_count = message_stats(user_msgs, ai_msgs)
+    keywords = extract_keywords(user_msgs + ai_msgs)
+    generate_summary(total, user_count, ai_count, keywords)
