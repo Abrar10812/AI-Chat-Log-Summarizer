@@ -86,22 +86,14 @@ def generate_summary(total, user_count, ai_count, keywords):
     top_words = [word for word, _ in keywords]
     excluded_words = {'today', 'now', 'system', 'thing', 'example', 'something'}
     topic_terms = [word for word in top_words if word not in excluded_words]
-    if not topic_terms:
-        topic_terms = top_words[:2]
+
+    topic_terms = top_words[:2]
 
     # Generate topic sentence
     if len(topic_terms) == 1:
         topic_line = f"- The user asked mainly about {topic_terms[0]}."
-    elif len(topic_terms) == 2:
-        topic_line = f"- The user asked mainly about {topic_terms[0]} and {topic_terms[1]}."
     else:
-        topic_line = (
-            "- The user asked mainly about "
-            + ", ".join(topic_terms[:2])
-            + ", and "
-            + topic_terms[2]
-            + "."
-        )
+        topic_line = f"- The user asked mainly about {topic_terms[0]} and {topic_terms[1]}."
 
     print(topic_line)
     print(f"- Most common keywords: {', '.join(top_words)}")
