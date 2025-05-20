@@ -1,12 +1,18 @@
 import os
 import re
+import nltk
 from collections import Counter
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
+from nltk import pos_tag, word_tokenize
+import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-# Download stopwords
-import nltk
+
+
+nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
+nltk.download('wordnet')
 nltk.download('stopwords')
 
 
@@ -34,22 +40,17 @@ def message_stats(user_msgs, ai_msgs):
 
 
 def extract_keywords(texts):
+    lemmatizer = WordNetLemmatizer()
     stop_words = set(stopwords.words('english'))
-    stop_words |= {'hi','hello','hey','greetings','good','morning','afternoon','evening'}
+    stop_words |= {'hi','hello','hey','greetings','good','morning','afternoon','evening', 'thanks', 'thank you', 'please', 'ok', 'okay', 'sure', 'yes', 'no'}
     words = [word.lower() for text in texts for word in re.findall(r'\b\w+\b', text)]
     filtered_words = [word for word in words if word not in stop_words]
     counter = Counter(filtered_words)
     return counter.most_common(5)
 
-def tfidf_keywords(texts):
-    vectorizer = TfidfVectorizer(stop_words='english', max_features=5)
-    tfidf_matrix = vectorizer.fit_transform(texts)
-    return vectorizer.get_feature_names_out()
-
 
 
 def generate_summary(total, user_count, ai_count, keywords):
-    """Generate a readable summary of the chat log."""
     print("\n--- Chat Log Summary ---")
     print(f"Total exchanges: {total}")
     print(f"User messages: {user_count}")
