@@ -2,6 +2,7 @@ import os
 import re
 from collections import Counter
 from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 # Download stopwords

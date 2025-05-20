@@ -83,7 +83,6 @@ from nltk.stem import WordNetLemmatizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
 
-
 nltk.download('punkt')
 nltk.download('averaged_perceptron_tagger')
 nltk.download('wordnet')
@@ -130,12 +129,12 @@ def summarize_conversation(conversation, top_n=3):
 
     # 7) format summary
     if len(top_terms) == 1:
-        return f"The conversation focuses on {top_terms[0]}."
+        return f"The user asked mainly about {top_terms[0]}."
     elif len(top_terms) == 2:
-        return f"The conversation focuses on {top_terms[0]} and {top_terms[1]}."
+        return f"The user asked mainly about {top_terms[0]} and {top_terms[1]}."
     else:
         return (
-            "The conversation focuses on "
+            "The user asked mainly about "
             + ", ".join(top_terms[:-1])
             + ", and "
             + top_terms[-1]
@@ -144,12 +143,10 @@ def summarize_conversation(conversation, top_n=3):
 
 # --- Test it
 conversation = [
-    "User: Hey there! Could you explain machine learning?",
-    "AI: Sure—machine learning is a subset of AI that learns from data.",
-    "User: What kinds of algorithms exist?",
-    "AI: Examples include regression, decision trees, clustering, neural networks, etc.",
-    "User: And where is it used?",
-    "AI: Finance, healthcare, self-driving cars, recommender systems, and more."
+    """User: Hi, can you tell me about Python?
+       AI: Sure! Python is a popular programming language known for its readability.
+       User: What can I use it for?
+       AI: You can use Python for web development, data analysis, AI, and more."""
 ]
 
 print(summarize_conversation(conversation, top_n=2))
