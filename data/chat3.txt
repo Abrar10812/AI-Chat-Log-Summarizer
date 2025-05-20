@@ -1,6 +1,0 @@
-User: Hi, how's everything going?
-AI: I'm alright. And you?
-User: Great, a bit busy though.
-AI: Life seems a bit hectic on your side. Anyways how can I help you today?
-User: Can you tell me about the statue of Liberty?
-AI: Certainly! The Statue of Liberty is situated in New York city, Unites States. It is considered as the national emblem of the USA and it was gifted to the country by France. It represents freedom of America.
