@@ -39,31 +39,68 @@ def message_stats(user_msgs, ai_msgs):
 
 
 
-def extract_keywords(texts):
+def extract_keywords_nouns(texts, top_n):
     lemmatizer = WordNetLemmatizer()
-    stop_words = set(stopwords.words('english'))
-    stop_words |= {'hi','hello','hey','greetings','good','morning','afternoon','evening', 'thanks', 'thank you', 'please', 'ok', 'okay', 'sure', 'yes', 'no'}
-    words = [word.lower() for text in texts for word in re.findall(r'\b\w+\b', text)]
-    filtered_words = [word for word in words if word not in stop_words]
-    counter = Counter(filtered_words)
-    return counter.most_common(5)
+    stop_words = set(stopwords.words('english')) | {
+        'hi', 'hello', 'hey', 'greetings', 'good', 'morning',
+        'afternoon', 'evening', 'please', 'thanks', 'thank'
+    }
+
+    def noun_analyzer(doc):
+        tokens = word_tokenize(doc)
+        tagged = pos_tag(tokens)
+        nouns = []
+        for word, tag in tagged:
+            lw = word.lower()
+            if tag.startswith('NN') and lw not in stop_words:
+                lemma = lemmatizer.lemmatize(lw, pos='n')
+                if lemma not in stop_words:
+                    nouns.append(lemma)
+        return nouns
+
+    vectorizer = TfidfVectorizer(analyzer=noun_analyzer)
+    X = vectorizer.fit_transform(texts)
+    scores = np.asarray(X.mean(axis=0)).ravel()
+    terms = vectorizer.get_feature_names_out()
+    if not terms.any():
+        return []
+
+    top_n = min(top_n, len(terms))
+    idxs = scores.argsort()[::-1][:top_n]
+    return [(terms[i], scores[i]) for i in idxs]
+
 
 
 
 def generate_summary(total, user_count, ai_count, keywords):
-    print("\n--- Chat Log Summary ---")
-    print(f"Total exchanges: {total}")
+    print("\n")
     print(f"User messages: {user_count}")
     print(f"AI messages: {ai_count}")
+    print(f"Summary: ")
+    print(f"- The conversation had {total} exchanges.")
 
-    # Determine the main topic of the conversation
-    if keywords:
-        main_topic = ", ".join([word for word, _ in keywords[:3]])
-        print(f"- The conversation had {total} exchanges.")
-        print(f"- The user asked mainly about {main_topic}.")
-        print(f"- Most common keywords: {', '.join([word for word, _ in keywords])}")
-    else:
+    if not keywords:
         print("- Unable to determine the main topic of the conversation.")
+        return
+
+
+
+    top_words = [word for word, _ in keywords]
+    excluded_words = {'today', 'now', 'system', 'thing', 'example', 'something'}
+    topic_terms = [word for word in top_words if word not in excluded_words]
+
+    topic_terms = top_words[:2]
+
+
+
+    if len(topic_terms) == 1:
+        topic_line = f"- The user asked mainly about {topic_terms[0]}."
+    else:
+        topic_line = f"- The user asked mainly about {topic_terms[0]} and {topic_terms[1]}."
+
+    print(topic_line)
+    print(f"- Most common keywords: {', '.join(top_words)}")
+
 
 
 
@@ -73,7 +110,7 @@ def main():
     for log in logs:
         user_msgs, ai_msgs = parse_logs(log)
         total, user_count, ai_count = message_stats(user_msgs, ai_msgs)
-        keywords = extract_keywords(user_msgs + ai_msgs)
+        keywords = extract_keywords_nouns(user_msgs + ai_msgs, top_n=5)
         generate_summary(total, user_count, ai_count, keywords)
 
 if __name__ == "__main__":
