@@ -10,7 +10,7 @@ nltk.download('averaged_perceptron_tagger')
 nltk.download('wordnet')
 nltk.download('stopwords')
 
-def summarize_conversation(conversation, top_n=3):
+def summarize_conversation(conversation, top_n):
     # 1) pull out text
     texts = [turn.split(":",1)[1].strip() for turn in conversation]
     

@@ -39,7 +39,7 @@ def message_stats(user_msgs, ai_msgs):
 
 
 
-def extract_keywords_nouns(texts, top_n=5):
+def extract_keywords_nouns(texts, top_n):
     lemmatizer = WordNetLemmatizer()
     stop_words = set(stopwords.words('english')) | {
         'hi', 'hello', 'hey', 'greetings', 'good', 'morning',
@@ -62,7 +62,6 @@ def extract_keywords_nouns(texts, top_n=5):
     X = vectorizer.fit_transform(texts)
     scores = np.asarray(X.mean(axis=0)).ravel()
     terms = vectorizer.get_feature_names_out()
-
     if not terms.any():
         return []
 
@@ -85,18 +84,22 @@ def generate_summary(total, user_count, ai_count, keywords):
 
     # Extract top keywords
     top_words = [word for word, _ in keywords]
+    excluded_words = {'today', 'now', 'system', 'thing', 'example', 'something'}
+    topic_terms = [word for word in top_words if word not in excluded_words]
+    if not topic_terms:
+        topic_terms = top_words[:2]
 
     # Generate topic sentence
-    if len(top_words) == 1:
-        topic_line = f"- The user asked mainly about {top_words[0]}."
-    elif len(top_words) == 2:
-        topic_line = f"- The user asked mainly about {top_words[0]} and {top_words[1]}."
+    if len(topic_terms) == 1:
+        topic_line = f"- The user asked mainly about {topic_terms[0]}."
+    elif len(topic_terms) == 2:
+        topic_line = f"- The user asked mainly about {topic_terms[0]} and {topic_terms[1]}."
     else:
         topic_line = (
             "- The user asked mainly about "
-            + ", ".join(top_words[:-1])
+            + ", ".join(topic_terms[:2])
             + ", and "
-            + top_words[-1]
+            + topic_terms[2]
             + "."
         )
 
@@ -112,7 +115,7 @@ def main():
     for log in logs:
         user_msgs, ai_msgs = parse_logs(log)
         total, user_count, ai_count = message_stats(user_msgs, ai_msgs)
-        keywords = extract_keywords_nouns(user_msgs + ai_msgs)
+        keywords = extract_keywords_nouns(user_msgs + ai_msgs, top_n=5)
         generate_summary(total, user_count, ai_count, keywords)
 
 if __name__ == "__main__":
